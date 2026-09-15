@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		037C77C51E8CB2460AADFFA2 /* StatusOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D117E77BF49F591090D0F26 /* StatusOverview.swift */; };
+		0DC0939FBAD34D0D1230E9B7 /* Sparkle-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */; };
 		32BADA03F988A45694CBA84F /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8E64573CDC6421DEFA8EF /* MenuBarLabel.swift */; };
 		3A1914CDEB7EC1C415A29CD5 /* DevelopmentPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849BDB1BBE4E9775A3A8C66A /* DevelopmentPreview.swift */; };
 		3E7DA1AC9A4AF67396CB7ECF /* IcingaMultiStatus-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */; };
@@ -21,7 +22,9 @@
 		963B4530EC46FC20915E4771 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C873F43C02E34F98AA74CB /* AboutView.swift */; };
 		A03935065E102EF29BF7D1E9 /* StatusPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E1D65FBD44E9B7ADCD85224 /* StatusPanel.swift */; };
 		ACE9E3A9B0FBB3633A9B1A0A /* IcingaCore in Frameworks */ = {isa = PBXBuildFile; productRef = D7F32226BC4B78F1C0C906FE /* IcingaCore */; };
+		B952CC3864123C23D91FC556 /* AppUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680A088D9A5636B11B16A /* AppUpdater.swift */; };
 		DA90BCDCAD4DA82E63B112F0 /* StatusRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653FBCCEB9917D0A90D8D314 /* StatusRows.swift */; };
+		E15A0E68F6524D1F0864C8B8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 06863EC3021FB5225559CC9D /* Sparkle */; };
 		EA4BD620EFC26E286FA197C3 /* IcingaStatusUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2604C8683636FF4C9EC4C457 /* IcingaStatusUITests.swift */; };
 		EEE5F5BF095484E98A79F69F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8815172D2F33F3AD38D0506C /* SettingsView.swift */; };
 		FB6A03C3CD4950298DEDAB4C /* DemoScenarioMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27853625AA64F9FB60FE62F /* DemoScenarioMenu.swift */; };
@@ -39,10 +42,12 @@
 
 /* Begin PBXFileReference section */
 		04C873F43C02E34F98AA74CB /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		0C9680A088D9A5636B11B16A /* AppUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdater.swift; sourceTree = "<group>"; };
 		252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "IcingaMultiStatus-LICENSE.txt"; sourceTree = "<group>"; };
 		2604C8683636FF4C9EC4C457 /* IcingaStatusUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IcingaStatusUITests.swift; sourceTree = "<group>"; };
 		26A8E64573CDC6421DEFA8EF /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
 		3A23A7E952E17621C781B2B7 /* icinga-staus-macos */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "icinga-staus-macos"; path = .; sourceTree = SOURCE_ROOT; };
+		3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sparkle-LICENSE.txt"; sourceTree = "<group>"; };
 		3B828BEC4C29656AFB8EE4C8 /* BrowserStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserStatusBadge.swift; sourceTree = "<group>"; };
 		3D117E77BF49F591090D0F26 /* StatusOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusOverview.swift; sourceTree = "<group>"; };
 		61561BFE69F994AF69079BE5 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -67,6 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACE9E3A9B0FBB3633A9B1A0A /* IcingaCore in Frameworks */,
+				E15A0E68F6524D1F0864C8B8 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +93,7 @@
 			children = (
 				04C873F43C02E34F98AA74CB /* AboutView.swift */,
 				C98729005CC4599110649984 /* AppStore.swift */,
+				0C9680A088D9A5636B11B16A /* AppUpdater.swift */,
 				3B828BEC4C29656AFB8EE4C8 /* BrowserStatusBadge.swift */,
 				E27853625AA64F9FB60FE62F /* DemoScenarioMenu.swift */,
 				849BDB1BBE4E9775A3A8C66A /* DevelopmentPreview.swift */,
@@ -129,6 +136,7 @@
 			children = (
 				AD6FF02EC9035FC7C7E03FB7 /* Assets.xcassets */,
 				252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */,
+				3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -159,6 +167,7 @@
 				CDCEFB6C52117DAF45875000 /* Sources */,
 				5B2500E6B431C55F8BAE9DCC /* Resources */,
 				3B55EE220A361D8BAF4B2172 /* Frameworks */,
+				BCAB279C177BA25736C06434 /* Sign Sparkle helpers */,
 			);
 			buildRules = (
 			);
@@ -167,6 +176,7 @@
 			name = IcingaStatus;
 			packageProductDependencies = (
 				D7F32226BC4B78F1C0C906FE /* IcingaCore */,
+				06863EC3021FB5225559CC9D /* Sparkle */,
 			);
 			productName = IcingaStatus;
 			productReference = CFBC193216ABE0959C0E1235 /* IcingaStatus.app */;
@@ -218,6 +228,7 @@
 			mainGroup = 966E81DB90AB2618A10A8D4D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				DBB994E2D3FB99A506996954 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				E0FB51F57EEC7C960E6EAC85 /* XCLocalSwiftPackageReference "." */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -238,10 +249,33 @@
 			files = (
 				8DA6B04F07D0463084A2D307 /* Assets.xcassets in Resources */,
 				3E7DA1AC9A4AF67396CB7ECF /* IcingaMultiStatus-LICENSE.txt in Resources */,
+				0DC0939FBAD34D0D1230E9B7 /* Sparkle-LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BCAB279C177BA25736C06434 /* Sign Sparkle helpers */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sign Sparkle helpers";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/sign-sparkle.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D9F04C50317AE3840D971C4 /* Sources */ = {
@@ -258,6 +292,7 @@
 			files = (
 				963B4530EC46FC20915E4771 /* AboutView.swift in Sources */,
 				567C6A6C2494ED2324A51EA7 /* AppStore.swift in Sources */,
+				B952CC3864123C23D91FC556 /* AppUpdater.swift in Sources */,
 				6F1BAFBE63372D7393055D75 /* BrowserStatusBadge.swift in Sources */,
 				FB6A03C3CD4950298DEDAB4C /* DemoScenarioMenu.swift in Sources */,
 				3A1914CDEB7EC1C415A29CD5 /* DevelopmentPreview.swift in Sources */,
@@ -392,12 +427,14 @@
 			baseConfigurationReference = B314503D06DAABF3EF750505 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/Distribution.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Icinga Status";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -476,12 +513,14 @@
 			baseConfigurationReference = B314503D06DAABF3EF750505 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/Distribution.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Icinga Status";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -536,7 +575,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		DBB994E2D3FB99A506996954 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		06863EC3021FB5225559CC9D /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBB994E2D3FB99A506996954 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		D7F32226BC4B78F1C0C906FE /* IcingaCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IcingaCore;

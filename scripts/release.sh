@@ -4,22 +4,27 @@ cd "$(dirname "$0")/.."
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/release.sh --check|--sign|--notarize
+Usage: ./scripts/release.sh --check|--sign|--notarize|--publish
 
 Set in the environment or ignored Config/Release.local.sh:
   ICINGA_RELEASE_TEAM_ID       Apple Developer team ID
   ICINGA_RELEASE_IDENTITY      Full Developer ID Application certificate name
   ICINGA_NOTARY_PROFILE        Notarytool Keychain profile (required for --notarize)
+  ICINGA_SPARKLE_ACCOUNT       Sparkle Keychain account (default: net.blendbyte.icingastatus)
+  ICINGA_RELEASE_REPO          GitHub repository (default: bashgeek/icinga-status-macos)
+  ICINGA_RELEASE_NOTES         Optional Markdown file; otherwise use GitHub's generated notes
 
 --check verifies local signing prerequisites without building or uploading.
 --sign builds and packages a locally signed ZIP without notarization or uploading.
 --notarize builds, submits to Apple, and packages a notarized ZIP for GitHub Releases.
+--publish also uploads the ZIP, checksum, and signed update feed to a GitHub release.
+          Requires a clean tree, the version tag pushed to GitHub, and a public repository.
 EOF
 }
 
 case "${1:-}" in
   --help|-h) usage; exit 0 ;;
-  --check|--sign|--notarize) mode="$1" ;;
+  --check|--sign|--notarize|--publish) mode="$1" ;;
   *) usage >&2; exit 2 ;;
 esac
 [[ $# == 1 ]] || { usage >&2; exit 2; }
@@ -29,8 +34,26 @@ if [[ -f Config/Release.local.sh ]]; then
 fi
 : "${ICINGA_RELEASE_TEAM_ID:?Set your Apple Developer team ID.}"
 : "${ICINGA_RELEASE_IDENTITY:?Set your Developer ID Application identity.}"
-if [[ "$mode" == --notarize ]]; then
+if [[ "$mode" == --notarize || "$mode" == --publish ]]; then
   : "${ICINGA_NOTARY_PROFILE:?Set your notarytool Keychain profile.}"
+fi
+export ICINGA_SPARKLE_ACCOUNT="${ICINGA_SPARKLE_ACCOUNT:-net.blendbyte.icingastatus}"
+export ICINGA_RELEASE_REPO="${ICINGA_RELEASE_REPO:-bashgeek/icinga-status-macos}"
+
+if [[ "$mode" == --publish ]]; then
+  [[ -z "$(git status --porcelain)" ]] || { echo 'Commit the release changes first.' >&2; exit 1; }
+  tag="$(git describe --tags --exact-match HEAD)"
+  remote_tag="$(gh api "repos/$ICINGA_RELEASE_REPO/git/ref/tags/$tag" --jq .object.sha)"
+  [[ "$remote_tag" == "$(git rev-parse "$tag")" ]] || { echo 'Push the release tag to GitHub first.' >&2; exit 1; }
+  [[ "$(gh repo view "$ICINGA_RELEASE_REPO" --json visibility --jq .visibility)" == PUBLIC ]] || {
+    echo 'GitHub-hosted updates require public release downloads. Make the repository public before publishing.' >&2; exit 1;
+  }
+  if gh release view "$tag" --repo "$ICINGA_RELEASE_REPO" >/dev/null 2>&1; then
+    echo 'This release already exists. Use a new version and tag.' >&2; exit 1
+  fi
+  if [[ -n "${ICINGA_RELEASE_NOTES:-}" && ! -f "$ICINGA_RELEASE_NOTES" ]]; then
+    echo 'The release notes file does not exist.' >&2; exit 1
+  fi
 fi
 
 if [[ ! "$ICINGA_RELEASE_TEAM_ID" =~ ^[A-Z0-9]{10}$ ]]; then
@@ -50,11 +73,17 @@ fi
 xcrun --find notarytool >/dev/null
 xcrun --find stapler >/dev/null
 if [[ "$mode" == --check ]]; then
-  echo 'Signing identity and tools are available. Notarization credentials will be validated when submitting.'
+  echo 'Signing identity and tools are available. Sparkle keys and notarization credentials are checked before use.'
   exit 0
 fi
 
 swift test
+xcodebuild -resolvePackageDependencies -project IcingaStatus.xcodeproj -scheme IcingaStatus \
+  -derivedDataPath build/DistributionDerivedData
+sparkle_bin="$PWD/build/DistributionDerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin"
+public_key="$("$sparkle_bin/generate_keys" --account "$ICINGA_SPARKLE_ACCOUNT" -p)"
+configured_key="$(/usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' Config/Info.plist)"
+[[ "$public_key" == "$configured_key" ]] || { echo 'The Sparkle Keychain key does not match Config/Info.plist.' >&2; exit 1; }
 mkdir -p build/distribution
 release_dir="$(mktemp -d "$PWD/build/distribution/release.XXXXXX")"
 echo "Release output: $release_dir"
@@ -89,6 +118,9 @@ lipo "$app/Contents/MacOS/Icinga Status" -verify_arch arm64 x86_64
 
 version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist")"
 [[ "$version" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]] || { echo 'Invalid release version.' >&2; exit 1; }
+if [[ "$mode" == --publish && "$tag" != "v$version" ]]; then
+  echo 'The release tag must match the app version.' >&2; exit 1
+fi
 if [[ "$mode" == --sign ]]; then
   artifact="Icinga-Status-$version-macos-universal-signed.zip"
   ditto -c -k --keepParent "$app" "$release_dir/$artifact"
@@ -112,4 +144,13 @@ spctl --assess --type execute --verbose=2 "$app"
 artifact="Icinga-Status-$version-macos-universal.zip"
 ditto -c -k --keepParent "$app" "$release_dir/$artifact"
 (cd "$release_dir" && shasum -a 256 "$artifact" > "$artifact.sha256")
+./scripts/generate-appcast.sh "$release_dir/$artifact" "$sparkle_bin"
 echo "Ready for GitHub Releases: $release_dir/$artifact"
+
+if [[ "$mode" == --publish ]]; then
+  notes=(--generate-notes)
+  if [[ -n "${ICINGA_RELEASE_NOTES:-}" ]]; then notes=(--notes-file "$ICINGA_RELEASE_NOTES"); fi
+  gh release create "$tag" "$release_dir/$artifact" "$release_dir/$artifact.sha256" "$release_dir/appcast.xml" \
+    --repo "$ICINGA_RELEASE_REPO" --verify-tag --draft --title "Icinga Status $tag" "${notes[@]}"
+  gh release edit "$tag" --repo "$ICINGA_RELEASE_REPO" --draft=false --latest
+fi

@@ -10,6 +10,7 @@ struct IcingaStatusApp: App {
         #else
         _store = State(initialValue: AppStore())
         #endif
+        _ = AppUpdater.shared
     }
 
     var body: some Scene {
@@ -24,7 +25,10 @@ struct IcingaStatusApp: App {
             SettingsView(store: store)
         }
         .defaultSize(width: 760, height: 570)
-        .commands { AboutCommands() }
+        .commands {
+            AboutCommands()
+            CommandGroup(after: .appInfo) { CheckForUpdatesButton() }
+        }
 
         #if DEBUG
         Window("Icinga Status", id: "preview") {

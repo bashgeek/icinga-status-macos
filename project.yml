@@ -13,6 +13,9 @@ settings:
 packages:
   IcingaStatusCore:
     path: .
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 targets:
   IcingaStatus:
     type: application
@@ -24,12 +27,15 @@ targets:
     dependencies:
       - package: IcingaStatusCore
         product: IcingaCore
+      - package: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: net.blendbyte.icingastatus
         PRODUCT_NAME: Icinga Status
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: Config/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Config/Distribution.entitlements
         INFOPLIST_KEY_CFBundleDisplayName: Icinga Status
         INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 Blendbyte GmbH"
         INFOPLIST_KEY_LSUIElement: YES
@@ -39,6 +45,10 @@ targets:
         ENABLE_APP_SANDBOX: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readonly
+    postBuildScripts:
+      - name: Sign Sparkle helpers
+        script: '"${SRCROOT}/scripts/sign-sparkle.sh"'
+        basedOnDependencyAnalysis: false
   IcingaStatusUITests:
     type: bundle.ui-testing
     platform: macOS

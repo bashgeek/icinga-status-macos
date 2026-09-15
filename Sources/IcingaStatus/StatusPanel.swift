@@ -298,6 +298,7 @@ struct StatusPanel: View {
                     openWindow(id: "about")
                 }
                 .accessibilityIdentifier("openAbout")
+                CheckForUpdatesButton()
                 Divider()
                 Button("Quit Icinga Status") { NSApplication.shared.terminate(nil) }.keyboardShortcut("q")
             } label: { Image(systemName: "ellipsis.circle") }
