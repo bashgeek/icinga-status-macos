@@ -114,7 +114,11 @@ if [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.get-task-allow' "
   echo 'Distribution app unexpectedly allows debugger attachment.' >&2
   exit 1
 fi
-lipo "$app/Contents/MacOS/Icinga Status" -verify_arch arm64 x86_64
+architectures="$(lipo -archs "$app/Contents/MacOS/Icinga Status")"
+case "$architectures" in
+  'arm64 x86_64'|'x86_64 arm64') ;;
+  *) echo "Release must support Apple silicon and Intel; found: $architectures" >&2; exit 1 ;;
+esac
 
 version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist")"
 [[ "$version" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]] || { echo 'Invalid release version.' >&2; exit 1; }
