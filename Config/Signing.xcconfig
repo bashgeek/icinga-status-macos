@@ -1,0 +1,5 @@
+// Use one Apple Development identity across builds to preserve Keychain authorization.
+// Configure your local team in Xcode or Config/Signing.local.xcconfig.
+CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Manual
+#include? "Signing.local.xcconfig"

@@ -1,0 +1,63 @@
+name: IcingaStatus
+options:
+  bundleIdPrefix: net.blendbyte
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_HARDENED_RUNTIME: YES
+packages:
+  IcingaStatusCore:
+    path: .
+targets:
+  IcingaStatus:
+    type: application
+    platform: macOS
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
+    sources: [Sources/IcingaStatus]
+    dependencies:
+      - package: IcingaStatusCore
+        product: IcingaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: net.blendbyte.icingastatus
+        PRODUCT_NAME: Icinga Status
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Icinga Status
+        INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 Blendbyte GmbH"
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        MARKETING_VERSION: 0.1.3
+        CURRENT_PROJECT_VERSION: 4
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
+        ENABLE_USER_SELECTED_FILES: readonly
+  IcingaStatusUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
+    sources: [IcingaStatusUITests]
+    dependencies:
+      - target: IcingaStatus
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: net.blendbyte.icingastatus.uitests
+        TEST_TARGET_NAME: IcingaStatus
+        ENABLE_HARDENED_RUNTIME: NO
+schemes:
+  IcingaStatus:
+    build:
+      targets:
+        IcingaStatus: all
+    test:
+      targets: [IcingaStatusUITests]

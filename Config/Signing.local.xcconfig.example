@@ -1,0 +1,4 @@
+// Copy to Signing.local.xcconfig and use your own Apple developer team.
+DEVELOPMENT_TEAM = YOUR_TEAM_ID
+// Optional when a team has more than one development identity:
+// CODE_SIGN_IDENTITY = Apple Development: Your Name (CERTIFICATE_ID)
