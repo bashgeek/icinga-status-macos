@@ -7,7 +7,7 @@ A native menu bar app for monitoring multiple Icinga 2 instances, built with Swi
 - Support for Icinga Web 2 Monitoring and Icinga DB Web.
 - Optional notifications, acknowledgements, and rechecks.
 - Keychain credentials and per-instance certificate trust for private CAs.
-- In-app updates powered by Sparkle, with optional automatic checks.
+- In-app updates powered by Sparkle, with automatic checks enabled by default.
 
 Icinga Status is an independent community project, unaffiliated with or endorsed by Icinga. It is provided as is, without warranties or guarantees of accuracy, availability, or support.
 
@@ -15,7 +15,7 @@ Icinga Status is an independent community project, unaffiliated with or endorsed
 
 Check [GitHub Releases](https://github.com/bashgeek/icinga-status-macos/releases) for a signed macOS version. Download the app from an available release, unpack it, and move **Icinga Status.app** to **Applications** before launching. The app lives in the menu bar and has no Dock icon.
 
-Choose **Check for Updates…** from the menu bar's More options menu or **Settings → General → Updates**. Automatic checks are opt-in, and you choose when to install an update. Versions without Sparkle, including v0.2.0, need one manual upgrade to a version with the updater. Development builds never update themselves.
+Choose **Check for Updates…** from the menu bar's More options menu or **Settings → General → Updates**. Automatic checks are enabled by default and can be disabled in Settings. You choose when to download and install an update. Versions without Sparkle, including v0.2.0, need one manual upgrade to a version with the updater. Development builds never update themselves.
 
 ## Screenshots
 

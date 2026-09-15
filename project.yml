@@ -40,8 +40,8 @@ targets:
         INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 Blendbyte GmbH"
         INFOPLIST_KEY_LSUIElement: YES
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
-        MARKETING_VERSION: 0.2.1
-        CURRENT_PROJECT_VERSION: 6
+        MARKETING_VERSION: 0.2.2
+        CURRENT_PROJECT_VERSION: 7
         ENABLE_APP_SANDBOX: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readonly
