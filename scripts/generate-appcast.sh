@@ -23,3 +23,4 @@ cp "$archive" "$staging/updates/$(basename "$archive")"
   --download-url-prefix "https://github.com/$repo/releases/download/v$version/" \
   --full-release-notes-url "https://github.com/$repo/releases/tag/v$version" \
   --link "https://github.com/$repo" -o "$output/appcast.xml" "$staging/updates"
+"$sparkle_bin/sign_update" --account "$account" --verify "$output/appcast.xml"
