@@ -6,6 +6,7 @@ A native menu bar app for monitoring multiple Icinga 2 instances, built with Swi
 - Overview, Hosts, and Services views with search, instance filters, and Icinga Web links.
 - Support for Icinga Web 2 Monitoring and Icinga DB Web.
 - Optional notifications, acknowledgements, and rechecks.
+- An optional alarm sound that repeats on your schedule while problems remain.
 - Keychain credentials and per-instance certificate trust for private CAs.
 - In-app updates powered by Sparkle, with automatic checks enabled by default.
 
@@ -56,6 +57,6 @@ After building Debug, run `python3 scripts/capture-screenshots.py` to export the
 
 ## Credits
 
-Inspired by [Icinga Multi Status](https://github.com/bashgeek/icinga-multi-status). The app icon comes from that project's `img/icon_black_*.png` assets at commit `4fe0bdca6df49db80cb571d65f1cdfa0f592b674`; the 1024-pixel variant is scaled from its 512-pixel original. Its [MIT license](Sources/IcingaStatus/Resources/IcingaMultiStatus-LICENSE.txt) is included in the app.
+Inspired by [Icinga Multi Status](https://github.com/bashgeek/icinga-multi-status). The app icon comes from that project's `img/icon_black_*.png` assets at commit `4fe0bdca6df49db80cb571d65f1cdfa0f592b674`; the 1024-pixel variant is scaled from its 512-pixel original. The Ding Ding, Horn, and Laser alarm sounds are that project's `sounds/*.mp3` files from the same commit. Its [MIT license](Sources/IcingaStatus/Resources/IcingaMultiStatus-LICENSE.txt) is included in the app.
 
 Updates use [Sparkle](https://sparkle-project.org/), with its [license and third-party notices](Sources/IcingaStatus/Resources/Sparkle-LICENSE.txt) included in the app.

@@ -37,6 +37,8 @@ final class AppStore {
     @ObservationIgnored private var refreshPulse = RefreshPulsePolicy()
     @ObservationIgnored private var pulseTask: Task<Void, Never>?
     @ObservationIgnored private var orderedObjects: [CheckListScope: [MonitoredObject]] = [:]
+    @ObservationIgnored private var alarm = AlarmPolicy()
+    @ObservationIgnored private let alarmPlayer = AlarmPlayer()
 
     var instances: [InstanceConfiguration] { configuration.instances }
     var preferences: AppPreferences { configuration.preferences }
@@ -166,7 +168,14 @@ final class AppStore {
             || previous.recoveryNotifications != preferences.recoveryNotifications {
             notifications.cancelPending()
         }
+        if previous.alarmSound != preferences.alarmSound || previous.effectiveAlarmRepeat != preferences.effectiveAlarmRepeat {
+            // Apply the new choice from the next refresh, even for problems that already sounded.
+            alarm.reset()
+            if previous.alarmSound != preferences.alarmSound { alarmPlayer.stop() }
+        }
     }
+
+    func previewAlarm(_ sound: AlarmSound) { alarmPlayer.play(sound) }
 
     func enableNotifications() async throws -> Bool {
         guard !isDemo else { return false }
@@ -188,6 +197,7 @@ final class AppStore {
         mutedUntil = .now.addingTimeInterval(3600)
         now = .now
         notifications.cancelPending()
+        alarmPlayer.stop()
     }
 
     func unmute() { mutedUntil = nil }
@@ -283,6 +293,7 @@ final class AppStore {
             var failures = 0
             while !Task.isCancelled {
                 guard let self, self.generations[instance.id] == generation else { return }
+                var newProblems = false
                 var runtime = self.runtimes[instance.id] ?? InstanceRuntime()
                 runtime.isRefreshing = true
                 self.runtimes[instance.id] = runtime
@@ -293,6 +304,7 @@ final class AppStore {
                     self.runtimes[instance.id] = InstanceRuntime(snapshot: snapshot)
                     let changes = self.tracker.changes(instanceID: instance.id, snapshot: snapshot, filters: self.preferences.filters)
                     if !self.isMuted { self.notifications.enqueue(changes, instanceName: instance.name, preferences: self.preferences) }
+                    newProblems = changes.contains { $0.kind == .problem }
                     failures = 0
                 } catch {
                     guard !Task.isCancelled, self.generations[instance.id] == generation else { return }
@@ -303,11 +315,22 @@ final class AppStore {
                     failures += 1
                 }
                 self.highlightRefresh()
+                self.soundAlarm(newProblems: newProblems)
                 let delay = min(300, instance.pollingInterval * pow(2, Double(min(failures, 4))))
                 do { try await Task.sleep(for: .seconds(max(instance.pollingInterval, delay))) }
                 catch { return }
             }
         }
+    }
+
+    private func soundAlarm(newProblems: Bool) {
+        guard let sound = AlarmSound.named(preferences.alarmSound) else { return }
+        let hasProblems = !aggregate.problems.isEmpty && !aggregate.isPaused
+        // Muting counts as hearing the alarm, so it does not sound for the same problems afterwards.
+        guard alarm.shouldPlay(hasProblems: hasProblems, newProblems: newProblems,
+                               repeat: preferences.effectiveAlarmRepeat, now: .now),
+              !isMuted, !alarmPlayer.isPlaying else { return }
+        alarmPlayer.play(sound)
     }
 
     private func clearRefreshPulse() {
@@ -382,6 +405,7 @@ final class AppStore {
         isSleeping = false
         storageError = nil
         highlightRefresh()
+        soundAlarm(newProblems: false)
     }
 
     private func advanceDemoClock() {

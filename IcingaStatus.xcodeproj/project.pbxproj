@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		037C77C51E8CB2460AADFFA2 /* StatusOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D117E77BF49F591090D0F26 /* StatusOverview.swift */; };
 		0DC0939FBAD34D0D1230E9B7 /* Sparkle-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */; };
+		193065918F299E368A92B9E3 /* horn.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5AB66BE1E3C2FD636E76DA1 /* horn.mp3 */; };
 		32BADA03F988A45694CBA84F /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A8E64573CDC6421DEFA8EF /* MenuBarLabel.swift */; };
 		3A1914CDEB7EC1C415A29CD5 /* DevelopmentPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849BDB1BBE4E9775A3A8C66A /* DevelopmentPreview.swift */; };
 		3E7DA1AC9A4AF67396CB7ECF /* IcingaMultiStatus-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */; };
+		517AC01C36FC18F7CF4A1BCC /* laser.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F4ECD1C62E6BC059471DDB62 /* laser.mp3 */; };
 		538C29F43146B987BC0E7D7C /* IcingaStatusApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F960318AF5AFCDD2E40ECFFF /* IcingaStatusApp.swift */; };
 		567C6A6C2494ED2324A51EA7 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98729005CC4599110649984 /* AppStore.swift */; };
 		6915604FBBB772BC8BD96DDA /* InstanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30CFC513381F7C12CF1C041 /* InstanceSettings.swift */; };
@@ -21,8 +23,10 @@
 		8DA6B04F07D0463084A2D307 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD6FF02EC9035FC7C7E03FB7 /* Assets.xcassets */; };
 		963B4530EC46FC20915E4771 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C873F43C02E34F98AA74CB /* AboutView.swift */; };
 		A03935065E102EF29BF7D1E9 /* StatusPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E1D65FBD44E9B7ADCD85224 /* StatusPanel.swift */; };
+		A27448A9EFAFD3E06BCE9930 /* dingding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2EB08645FAC6DEAE9A91E5FA /* dingding.mp3 */; };
 		ACE9E3A9B0FBB3633A9B1A0A /* IcingaCore in Frameworks */ = {isa = PBXBuildFile; productRef = D7F32226BC4B78F1C0C906FE /* IcingaCore */; };
 		B952CC3864123C23D91FC556 /* AppUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9680A088D9A5636B11B16A /* AppUpdater.swift */; };
+		D23ECA8023D1374590DFBB7F /* AlarmSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9736EF219394BED8BEAC9879 /* AlarmSound.swift */; };
 		DA90BCDCAD4DA82E63B112F0 /* StatusRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653FBCCEB9917D0A90D8D314 /* StatusRows.swift */; };
 		E15A0E68F6524D1F0864C8B8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 06863EC3021FB5225559CC9D /* Sparkle */; };
 		EA4BD620EFC26E286FA197C3 /* IcingaStatusUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2604C8683636FF4C9EC4C457 /* IcingaStatusUITests.swift */; };
@@ -46,6 +50,7 @@
 		252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "IcingaMultiStatus-LICENSE.txt"; sourceTree = "<group>"; };
 		2604C8683636FF4C9EC4C457 /* IcingaStatusUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IcingaStatusUITests.swift; sourceTree = "<group>"; };
 		26A8E64573CDC6421DEFA8EF /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
+		2EB08645FAC6DEAE9A91E5FA /* dingding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dingding.mp3; sourceTree = "<group>"; };
 		3A23A7E952E17621C781B2B7 /* icinga-staus-macos */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "icinga-staus-macos"; path = .; sourceTree = SOURCE_ROOT; };
 		3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Sparkle-LICENSE.txt"; sourceTree = "<group>"; };
 		3B828BEC4C29656AFB8EE4C8 /* BrowserStatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserStatusBadge.swift; sourceTree = "<group>"; };
@@ -56,13 +61,16 @@
 		849BDB1BBE4E9775A3A8C66A /* DevelopmentPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentPreview.swift; sourceTree = "<group>"; };
 		854F7DFCB09EC4A1768AF383 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		8815172D2F33F3AD38D0506C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9736EF219394BED8BEAC9879 /* AlarmSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmSound.swift; sourceTree = "<group>"; };
 		A3CABB836F959246F4455164 /* IcingaStatusUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IcingaStatusUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD6FF02EC9035FC7C7E03FB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B314503D06DAABF3EF750505 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		C5AB66BE1E3C2FD636E76DA1 /* horn.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = horn.mp3; sourceTree = "<group>"; };
 		C98729005CC4599110649984 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		CFBC193216ABE0959C0E1235 /* IcingaStatus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IcingaStatus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E27853625AA64F9FB60FE62F /* DemoScenarioMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScenarioMenu.swift; sourceTree = "<group>"; };
 		E30CFC513381F7C12CF1C041 /* InstanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettings.swift; sourceTree = "<group>"; };
+		F4ECD1C62E6BC059471DDB62 /* laser.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = laser.mp3; sourceTree = "<group>"; };
 		F960318AF5AFCDD2E40ECFFF /* IcingaStatusApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IcingaStatusApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,10 +96,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5A819468614B378F5B6ABCFA /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				2EB08645FAC6DEAE9A91E5FA /* dingding.mp3 */,
+				C5AB66BE1E3C2FD636E76DA1 /* horn.mp3 */,
+				F4ECD1C62E6BC059471DDB62 /* laser.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		615DC6E543EF2B2E28A1AC60 /* IcingaStatus */ = {
 			isa = PBXGroup;
 			children = (
 				04C873F43C02E34F98AA74CB /* AboutView.swift */,
+				9736EF219394BED8BEAC9879 /* AlarmSound.swift */,
 				C98729005CC4599110649984 /* AppStore.swift */,
 				0C9680A088D9A5636B11B16A /* AppUpdater.swift */,
 				3B828BEC4C29656AFB8EE4C8 /* BrowserStatusBadge.swift */,
@@ -137,6 +156,7 @@
 				AD6FF02EC9035FC7C7E03FB7 /* Assets.xcassets */,
 				252BE64F8E19BC93AA32EDC5 /* IcingaMultiStatus-LICENSE.txt */,
 				3A7E2C4E3BAAE28559E55FE7 /* Sparkle-LICENSE.txt */,
+				5A819468614B378F5B6ABCFA /* Sounds */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -250,6 +270,9 @@
 				8DA6B04F07D0463084A2D307 /* Assets.xcassets in Resources */,
 				3E7DA1AC9A4AF67396CB7ECF /* IcingaMultiStatus-LICENSE.txt in Resources */,
 				0DC0939FBAD34D0D1230E9B7 /* Sparkle-LICENSE.txt in Resources */,
+				A27448A9EFAFD3E06BCE9930 /* dingding.mp3 in Resources */,
+				193065918F299E368A92B9E3 /* horn.mp3 in Resources */,
+				517AC01C36FC18F7CF4A1BCC /* laser.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				963B4530EC46FC20915E4771 /* AboutView.swift in Sources */,
+				D23ECA8023D1374590DFBB7F /* AlarmSound.swift in Sources */,
 				567C6A6C2494ED2324A51EA7 /* AppStore.swift in Sources */,
 				B952CC3864123C23D91FC556 /* AppUpdater.swift in Sources */,
 				6F1BAFBE63372D7393055D75 /* BrowserStatusBadge.swift in Sources */,
@@ -429,7 +453,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/Distribution.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -443,7 +467,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.2;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.blendbyte.icingastatus;
 				PRODUCT_NAME = "Icinga Status";
 				SDKROOT = macosx;
@@ -515,7 +539,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/Distribution.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -529,7 +553,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.2;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.blendbyte.icingastatus;
 				PRODUCT_NAME = "Icinga Status";
 				SDKROOT = macosx;

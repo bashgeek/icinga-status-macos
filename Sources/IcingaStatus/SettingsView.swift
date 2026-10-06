@@ -179,6 +179,7 @@ private struct NotificationSettings: View {
             } header: { Text("Incident notifications") } footer: {
                 Text("Existing problems are quiet on startup and reconnect. New changes are grouped to reduce bursts, and repeated polls do not repeat alerts. Notifications follow your monitoring filters and macOS Focus settings.")
             }
+            alarmSection
             Section {
                 Button(store.isMuted ? "Unmute notifications" : "Mute for one hour") {
                     if store.isMuted { store.unmute() } else { store.muteForOneHour() }
@@ -189,6 +190,45 @@ private struct NotificationSettings: View {
             }
             if let error { Text(error).foregroundStyle(.red) }
         }.formStyle(.grouped)
+    }
+
+    private var alarmSection: some View {
+        let selected = AlarmSound.named(store.preferences.alarmSound)
+        return Section {
+            HStack {
+                Picker("Alarm sound", selection: Binding(
+                    get: { selected?.id ?? "" },
+                    set: { id in
+                        update { $0.alarmSound = id.isEmpty ? nil : id }
+                        if let sound = AlarmSound.named(id) { store.previewAlarm(sound) }
+                    }
+                )) {
+                    Text("None").tag("")
+                    Section("Alarm sounds") {
+                        ForEach(AlarmSound.bundled) { Text($0.title).tag($0.id) }
+                    }
+                    Section("macOS sounds") {
+                        ForEach(AlarmSound.system) { Text($0.title).tag($0.id) }
+                    }
+                }
+                .accessibilityIdentifier("alarmSound")
+                Button { if let selected { store.previewAlarm(selected) } } label: {
+                    Image(systemName: "play.fill")
+                }
+                .buttonStyle(.borderless).disabled(selected == nil)
+                .help("Play the alarm sound").accessibilityLabel("Play the alarm sound")
+            }
+            Picker("Repeat", selection: Binding(
+                get: { store.preferences.effectiveAlarmRepeat },
+                set: { value in update { $0.alarmRepeat = value } }
+            )) {
+                ForEach(AlarmRepeat.allCases, id: \.self) { Text($0.title).tag($0) }
+            }
+            .disabled(selected == nil)
+            .accessibilityIdentifier("alarmRepeat")
+        } header: { Text("Alarm") } footer: {
+            Text("Plays while problems included by your monitoring filters remain, even when macOS notifications are off. New or escalated problems always sound the alarm again. Muting notifications also silences it.")
+        }
     }
 
     private func update(_ edit: (inout AppPreferences) -> Void) {

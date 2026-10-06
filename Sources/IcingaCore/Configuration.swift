@@ -150,6 +150,10 @@ public struct AppPreferences: Codable, Equatable, Sendable {
     public var notificationsEnabled = false
     public var recoveryNotifications = false
     public var notificationSound = false
+    /// Alarm sound identifier, or `nil` for no alarm. Optional fields keep older configurations decodable.
+    public var alarmSound: String?
+    public var alarmRepeat: AlarmRepeat?
+    public var effectiveAlarmRepeat: AlarmRepeat { alarmRepeat ?? .once }
     public init() {}
 }
 
