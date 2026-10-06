@@ -275,3 +275,40 @@ private func instance(_ id: UUID = testID) -> InstanceConfiguration {
     #expect(status.objectCount == 10_000)
     #expect(status.problems.count == 100)
 }
+
+@Test func problemsWithSharedDisplayNamesKeepAStableOrder() {
+    let objects = [object(2, name: "b"), object(2, name: "a")].map {
+        MonitoredObject(id: $0.id, hostName: $0.hostName, serviceName: $0.serviceName, displayName: "Disk", state: 2)
+    }
+    for input in [objects, objects.reversed()] {
+        let status = AggregateStatus(instances: [instance()], runtimes: [
+            testID: InstanceRuntime(snapshot: InstanceSnapshot(objects: input, fetchedAt: time))
+        ], filters: FilterSettings(), now: time)
+        #expect(status.problems.map(\.id.name) == ["db-01!a", "db-01!b"])
+    }
+}
+
+@Test func cachedInventoryOrderFiltersLikeADirectListing() {
+    let otherID = UUID()
+    let status = AggregateStatus(instances: [instance(), instance(otherID)], runtimes: [
+        testID: InstanceRuntime(snapshot: InstanceSnapshot(objects: [object(0, name: "Disk 10"), object(2, name: "Disk 2")], fetchedAt: time)),
+        otherID: InstanceRuntime(snapshot: InstanceSnapshot(objects: [object(0, instanceID: otherID, name: "Disk 2")], fetchedAt: time))
+    ], filters: FilterSettings(), now: time)
+    for scope in CheckListScope.allCases {
+        let ordered = status.orderedObjects(in: scope)
+        #expect(AggregateStatus.filter(ordered) == status.listedObjects(in: scope))
+        #expect(AggregateStatus.filter(ordered, instanceID: otherID, search: "disk")
+                == status.listedObjects(in: scope, instanceID: otherID, search: "disk"))
+    }
+}
+
+@Test func compiledProblemFilterMatchesFilterSettings() {
+    var filters = FilterSettings()
+    filters.ignoredHosts = "web-*\n\n  db-0?  "
+    filters.ignoredServices = "Disk (root)"
+    let filter = ProblemFilter(filters)
+    for candidate in [object(2), object(1, kind: .host), object(2, name: "Disk (root)"), object(2, name: "HTTP")] {
+        #expect(filter.includes(candidate) == filters.includes(candidate))
+    }
+    #expect(!filter.includes(object(2)))
+}

@@ -151,7 +151,13 @@ public struct IcingaClient: Sendable {
             body["persistent"] = false
         }
         let request = try makeRequest(path: "actions/\(path)", body: JSONSerialization.data(withJSONObject: body))
-        let data = try await checkedResponse(request)
+        let raw = try await transport.send(request)
+        // Failed actions carry Icinga's reason in the body: 404 "No objects found." or per-object results.
+        if !(200..<300).contains(raw.statusCode), ![401, 403].contains(raw.statusCode),
+           let message = ActionResponse.failureMessage(in: raw.data) {
+            throw IcingaError.actionFailed(message)
+        }
+        let data = try Self.checked(raw)
         let response = try JSONDecoder().decode(ActionResponse.self, from: data)
         guard !response.results.isEmpty else { throw IcingaError.actionFailed("The object was not found or is not accessible.") }
         for result in response.results where !(200..<300).contains(result.code) {
@@ -236,7 +242,10 @@ public struct IcingaClient: Sendable {
     }
 
     private func checkedResponse(_ request: URLRequest) async throws -> Data {
-        let response = try await transport.send(request)
+        try Self.checked(await transport.send(request))
+    }
+
+    private static func checked(_ response: HTTPResponse) throws -> Data {
         switch response.statusCode {
         case 200..<300: return response.data
         case 401: throw IcingaError.authentication
@@ -269,4 +278,15 @@ private struct ObjectResponse: Decodable {
 private struct ActionResponse: Decodable {
     let results: [Result]
     struct Result: Decodable { let code: Int; let status: String? }
+
+    private struct ErrorBody: Decodable { let status: String? }
+
+    static func failureMessage(in data: Data) -> String? {
+        let decoder = JSONDecoder()
+        if let response = try? decoder.decode(ActionResponse.self, from: data),
+           let status = response.results.first(where: { !(200..<300).contains($0.code) })?.status {
+            return status
+        }
+        return (try? decoder.decode(ErrorBody.self, from: data))?.status
+    }
 }

@@ -52,7 +52,7 @@ public struct InstanceConfiguration: Codable, Identifiable, Equatable, Sendable 
               !username.contains(":") else { throw ConfigurationError.invalidUsername }
         _ = try validatedBaseURL()
         if !webURL.isEmpty {
-            guard let parts = URLComponents(string: webURL), parts.scheme == "https" || parts.scheme == "http",
+            guard let parts = URLComponents(string: webURL), ["http", "https"].contains(parts.scheme?.lowercased() ?? ""),
                   let host = parts.host, !host.isEmpty, parts.user == nil, parts.password == nil else {
                 throw ConfigurationError.invalidWebURL
             }
@@ -84,26 +84,54 @@ public struct FilterSettings: Codable, Equatable, Sendable {
     public var ignoredServices = ""
     public init() {}
 
-    public func includes(_ object: MonitoredObject) -> Bool {
-        guard object.isProblem,
-              includeAcknowledged || !object.isAcknowledged,
-              includeDowntime || !object.isInDowntime,
-              includeSoftStates || object.isHardState else { return false }
-        return !Self.matches(object.hostName, patterns: ignoredHosts)
-            && !Self.matches(object.serviceName ?? "", patterns: ignoredServices)
-    }
+    /// Prefer `ProblemFilter` when checking many objects; this compiles the ignore patterns on every call.
+    public func includes(_ object: MonitoredObject) -> Bool { ProblemFilter(self).includes(object) }
 
     /// Case-insensitive glob patterns, one per line. Only * and ? are special.
     public static func matches(_ value: String, patterns: String) -> Bool {
-        guard !value.isEmpty else { return false }
-        return patterns.components(separatedBy: .newlines).contains { line in
+        GlobPatterns(patterns).matches(value)
+    }
+}
+
+/// `FilterSettings` with its ignore patterns compiled once for a whole snapshot.
+public struct ProblemFilter {
+    private let settings: FilterSettings
+    private let hosts: GlobPatterns
+    private let services: GlobPatterns
+
+    public init(_ settings: FilterSettings) {
+        self.settings = settings
+        hosts = GlobPatterns(settings.ignoredHosts)
+        services = GlobPatterns(settings.ignoredServices)
+    }
+
+    public func includes(_ object: MonitoredObject) -> Bool {
+        guard object.isProblem,
+              settings.includeAcknowledged || !object.isAcknowledged,
+              settings.includeDowntime || !object.isInDowntime,
+              settings.includeSoftStates || object.isHardState else { return false }
+        return !hosts.matches(object.hostName) && !services.matches(object.serviceName ?? "")
+    }
+}
+
+private struct GlobPatterns {
+    private let expressions: [NSRegularExpression]
+
+    init(_ patterns: String) {
+        expressions = patterns.components(separatedBy: .newlines).compactMap { line in
             let pattern = line.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !pattern.isEmpty else { return false }
+            guard !pattern.isEmpty else { return nil }
             let expression = "^" + NSRegularExpression.escapedPattern(for: pattern)
                 .replacingOccurrences(of: "\\*", with: ".*")
                 .replacingOccurrences(of: "\\?", with: ".") + "$"
-            return value.range(of: expression, options: [.regularExpression, .caseInsensitive]) != nil
+            return try? NSRegularExpression(pattern: expression, options: [.caseInsensitive])
         }
+    }
+
+    func matches(_ value: String) -> Bool {
+        guard !value.isEmpty else { return false }
+        let range = NSRange(value.startIndex..., in: value)
+        return expressions.contains { $0.firstMatch(in: value, range: range) != nil }
     }
 }
 

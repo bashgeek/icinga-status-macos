@@ -19,6 +19,7 @@ public struct IncidentTracker: Sendable {
         let current = Dictionary(snapshot.objects.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
         defer { previous[instanceID] = current }
         guard let baseline = previous[instanceID] else { return [] }
+        let filters = ProblemFilter(filters)
         var changes: [IncidentChange] = []
         for object in snapshot.objects {
             let old = baseline[object.id]

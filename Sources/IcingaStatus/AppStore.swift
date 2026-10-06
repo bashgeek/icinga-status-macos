@@ -6,12 +6,16 @@ import Observation
 
 @MainActor @Observable
 final class AppStore {
-    private(set) var configuration = AppConfiguration()
-    private(set) var runtimes: [UUID: InstanceRuntime] = [:]
-    private(set) var isPaused = false
-    private(set) var isSleeping = false
+    // Inputs to `aggregate`. Recompute once per change instead of on every view access.
+    private(set) var configuration = AppConfiguration() { didSet { updateAggregate() } }
+    private(set) var runtimes: [UUID: InstanceRuntime] = [:] { didSet { updateAggregate() } }
+    private(set) var isPaused = false { didSet { updateAggregate() } }
+    private(set) var isSleeping = false { didSet { updateAggregate() } }
+    private(set) var now = Date.now { didSet { updateAggregate() } }
+    /// Published only when its contents change, so the heartbeat and refresh flags
+    /// do not re-render the menu bar label or rebuild the check list.
+    private(set) var aggregate = AggregateStatus(instances: [], runtimes: [:], filters: FilterSettings())
     private(set) var mutedUntil: Date?
-    private(set) var now = Date.now
     private(set) var isRefreshHighlighted = false
     var storageError: String?
     let isDemo: Bool
@@ -32,13 +36,26 @@ final class AppStore {
     @ObservationIgnored private var wasOffline = false
     @ObservationIgnored private var refreshPulse = RefreshPulsePolicy()
     @ObservationIgnored private var pulseTask: Task<Void, Never>?
+    @ObservationIgnored private var orderedObjects: [CheckListScope: [MonitoredObject]] = [:]
 
     var instances: [InstanceConfiguration] { configuration.instances }
     var preferences: AppPreferences { configuration.preferences }
     var isMuted: Bool { mutedUntil.map { $0 > now } ?? false }
-    var aggregate: AggregateStatus {
-        AggregateStatus(instances: instances, runtimes: runtimes, filters: preferences.filters,
-                        isPaused: isPaused || isSleeping, now: now)
+
+    func listedObjects(in scope: CheckListScope, instanceID: UUID?, search: String) -> [MonitoredObject] {
+        let status = aggregate
+        let ordered = orderedObjects[scope] ?? status.orderedObjects(in: scope)
+        orderedObjects[scope] = ordered
+        return AggregateStatus.filter(ordered, instanceID: instanceID, search: search,
+                                      instanceNames: Dictionary(instances.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first }))
+    }
+
+    private func updateAggregate() {
+        let updated = AggregateStatus(instances: instances, runtimes: runtimes, filters: preferences.filters,
+                                      isPaused: isPaused || isSleeping, now: now)
+        guard updated != aggregate else { return }
+        aggregate = updated
+        orderedObjects.removeAll()
     }
 
     init(demo: Bool = false, isolated: Bool = false) {
@@ -59,6 +76,7 @@ final class AppStore {
             } catch { storageError = error.localizedDescription }
         }
         if !isDemo { installLifecycleObservers() }
+        updateAggregate()
         heartbeat = Task { [weak self] in
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(5)) } catch { return }
@@ -129,18 +147,6 @@ final class AppStore {
         tracker.reset(instanceID: instance.id)
         notifications.cancelPending()
         if !isDemo { try credentials.delete(instance.id) }
-    }
-
-    func setEnabled(_ enabled: Bool, for id: UUID) throws {
-        var updated = configuration
-        guard let index = updated.instances.firstIndex(where: { $0.id == id }) else { return }
-        updated.instances[index].isEnabled = enabled
-        try persist(updated)
-        configuration = updated
-        cancel(id)
-        tracker.reset(instanceID: id)
-        notifications.cancelPending()
-        startPolling(updated.instances[index])
     }
 
     func updatePreferences(_ preferences: AppPreferences) throws {

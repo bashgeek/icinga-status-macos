@@ -7,13 +7,14 @@ private actor StubTransport: HTTPTransport {
     let serviceCode: Int
     let serviceData: Data
     let actionData: Data
+    let actionCode: Int
     init(serviceCode: Int = 200, serviceData: Data = serviceFixture,
-         actionData: Data = Data(#"{"results":[{"code":200.0,"status":"Done"}]}"#.utf8)) {
-        self.serviceCode = serviceCode; self.serviceData = serviceData; self.actionData = actionData
+         actionData: Data = Data(#"{"results":[{"code":200.0,"status":"Done"}]}"#.utf8), actionCode: Int = 200) {
+        self.serviceCode = serviceCode; self.serviceData = serviceData; self.actionData = actionData; self.actionCode = actionCode
     }
     func send(_ request: URLRequest) async throws -> HTTPResponse {
         requests.append(request)
-        if request.url!.path.contains("actions") { return HTTPResponse(data: actionData, statusCode: 200) }
+        if request.url!.path.contains("actions") { return HTTPResponse(data: actionData, statusCode: actionCode) }
         if request.url!.path.hasSuffix("services") { return HTTPResponse(data: serviceData, statusCode: serviceCode) }
         return HTTPResponse(data: hostFixture, statusCode: 200)
     }
@@ -198,4 +199,20 @@ func actionChecksPerObjectResults(json: String) async throws {
 @Test func invalidCertificateAndMissingPasswordAreRejected() {
     #expect(throws: IcingaError.self) { try CertificateBundle.certificates(from: Data("not a certificate".utf8)) }
     #expect(throws: IcingaError.self) { try IcingaClient(instance: configuration(), password: "") }
+}
+
+@Test(arguments: [
+    (404, #"{"error":404,"status":"No objects found."}"#, "No objects found."),
+    (500, #"{"results":[{"code":409,"status":"Service is OK."}]}"#, "Service is OK.")
+])
+func failedActionsReportIcingaReason(code: Int, json: String, reason: String) async throws {
+    let config = configuration(actions: true)
+    let client = try IcingaClient(instance: config, password: "secret",
+                                  transport: StubTransport(actionData: Data(json.utf8), actionCode: code))
+    do {
+        try await client.perform(.recheck, on: ObjectID(instanceID: config.id, kind: .host, name: "db-01"))
+        Issue.record("The action should fail.")
+    } catch IcingaError.actionFailed(let message) {
+        #expect(message == reason)
+    }
 }

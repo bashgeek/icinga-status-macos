@@ -101,12 +101,10 @@ private struct MonitoringSettings: View {
             }
             Section {
                 LabeledContent("Ignore hosts") {
-                    TextField("backup-*\ntest-?", text: filterBinding(\.ignoredHosts), axis: .vertical)
-                        .lineLimit(3...6).frame(minWidth: 260)
+                    PatternField(prompt: "backup-*\ntest-?", saved: filterBinding(\.ignoredHosts))
                 }
                 LabeledContent("Ignore services") {
-                    TextField("Disk space*", text: filterBinding(\.ignoredServices), axis: .vertical)
-                        .lineLimit(3...6).frame(minWidth: 260)
+                    PatternField(prompt: "Disk space*", saved: filterBinding(\.ignoredServices))
                 }
             } header: { Text("Ignore patterns") } footer: {
                 Text("One pattern per line, matched without case sensitivity. Use * for any text and ? for a single character. Patterns match the full host or service name.")
@@ -122,6 +120,31 @@ private struct MonitoringSettings: View {
             do { try store.updatePreferences(updated); error = nil }
             catch { self.error = error.localizedDescription }
         })
+    }
+}
+
+/// Saves after typing pauses. Every saved filter change rebaselines notifications
+/// and rewrites the configuration, which should not happen once per keystroke.
+private struct PatternField: View {
+    let prompt: String
+    let saved: Binding<String>
+    @State private var draft: String
+
+    init(prompt: String, saved: Binding<String>) {
+        self.prompt = prompt
+        self.saved = saved
+        _draft = State(initialValue: saved.wrappedValue)
+    }
+
+    var body: some View {
+        TextField(prompt, text: $draft, axis: .vertical)
+            .lineLimit(3...6).frame(minWidth: 260)
+            .task(id: draft) {
+                guard draft != saved.wrappedValue else { return }
+                do { try await Task.sleep(for: .milliseconds(600)) } catch { return }
+                saved.wrappedValue = draft
+            }
+            .onDisappear { if draft != saved.wrappedValue { saved.wrappedValue = draft } }
     }
 }
 

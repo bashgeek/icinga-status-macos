@@ -95,7 +95,7 @@ public struct CheckCounts: Equatable, Sendable {
     public var total: Int { counts.values.reduce(0, +) }
 }
 
-public struct AggregateStatus: Sendable {
+public struct AggregateStatus: Equatable, Sendable {
     public let hosts: CheckCounts
     public let services: CheckCounts
     /// All retained checks from enabled instances, unaffected by incident filters.
@@ -139,14 +139,19 @@ public struct AggregateStatus: Sendable {
         allObjects = all
         hosts = CheckCounts(objects: all.filter { $0.id.kind == .host })
         services = CheckCounts(objects: all.filter { $0.id.kind == .service })
-        pendingCount = all.filter { !$0.hasBeenChecked }.count
-        problems = all.filter(filters.includes).sorted {
+        pendingCount = all.count(where: { !$0.hasBeenChecked })
+        let filter = ProblemFilter(filters)
+        problems = all.filter(filter.includes).sorted {
             if $0.severity != $1.severity { return $0.severity > $1.severity }
             if $0.hostName != $1.hostName { return $0.hostName.localizedStandardCompare($1.hostName) == .orderedAscending }
-            if $0.displayName != $1.displayName { return $0.displayName < $1.displayName }
-            return $0.id.instanceID.uuidString < $1.id.instanceID.uuidString
+            if $0.displayName != $1.displayName {
+                return $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
+            }
+            // Display names are not unique. Finish on the identity so rows keep their order between polls.
+            if $0.id.instanceID != $1.id.instanceID { return $0.id.instanceID.uuidString < $1.id.instanceID.uuidString }
+            return $0.id.name < $1.id.name
         }
-        suppressedCount = all.filter(\.isProblem).count - problems.count
+        suppressedCount = all.count(where: \.isProblem) - problems.count
     }
 
     public var title: String {

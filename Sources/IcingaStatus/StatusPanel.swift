@@ -24,8 +24,7 @@ struct StatusPanel: View {
     private var filtersActive: Bool { !search.isEmpty || selectedInstance != nil }
     private var showsCheckList: Bool { scope != .problems || !store.aggregate.problems.isEmpty }
     private var visibleObjects: [MonitoredObject] {
-        store.aggregate.listedObjects(in: scope, instanceID: selectedInstance, search: search,
-                                      instanceNames: Dictionary(uniqueKeysWithValues: store.instances.map { ($0.id, $0.name) }))
+        store.listedObjects(in: scope, instanceID: selectedInstance, search: search)
     }
 
     var body: some View {
