@@ -81,10 +81,10 @@ struct InstanceStatusRow: View {
 struct CheckRow: View {
     let object: MonitoredObject
     let store: AppStore
+    let acknowledge: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hovered = false
     @State private var expanded = false
-    @State private var acknowledging = false
     @State private var busy = false
     @State private var message: String?
 
@@ -160,7 +160,7 @@ struct CheckRow: View {
                                     busy = false
                                 }
                             }
-                            Button("Acknowledge…") { acknowledging = true }.disabled(object.isAcknowledged || !object.isProblem)
+                            Button("Acknowledge…", action: acknowledge).disabled(object.isAcknowledged || !object.isProblem)
                             if busy { ProgressView().controlSize(.small) }
                         }
                         .disabled(busy).controlSize(.small)
@@ -176,7 +176,6 @@ struct CheckRow: View {
         .padding(14)
         .background(hovered ? Color.primary.opacity(0.025) : .clear, in: RoundedRectangle(cornerRadius: PanelStyle.radius))
         .onHover { hovered = $0 }
-        .sheet(isPresented: $acknowledging) { AcknowledgeView(object: object, store: store) }
     }
 
     private var isStale: Bool {
@@ -206,14 +205,16 @@ struct CheckRow: View {
     }
 }
 
-private struct AcknowledgeView: View {
+// Shown inside the menu bar panel: a sheet is a separate window, and focusing it closes the panel.
+struct AcknowledgeView: View {
     let object: MonitoredObject
     let store: AppStore
-    @Environment(\.dismiss) private var dismiss
+    let dismiss: () -> Void
     @State private var author = NSFullUserName()
     @State private var comment = ""
     @State private var error: String?
     @State private var busy = false
+    @FocusState private var commentFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -221,6 +222,7 @@ private struct AcknowledgeView: View {
             Text("\(object.hostName) · \(object.displayName)").foregroundStyle(.secondary)
             TextField("Author", text: $author)
             TextField("What’s being done?", text: $comment, axis: .vertical).lineLimit(3...6)
+                .focused($commentFocused)
             Text("The acknowledgement stays until recovery. This does not send an Icinga notification.")
                 .font(.caption).foregroundStyle(.secondary)
             if let error { Text(error).foregroundStyle(.red).font(.callout) }
@@ -241,6 +243,9 @@ private struct AcknowledgeView: View {
             }
         }
         .padding(24).frame(width: 390).textFieldStyle(.roundedBorder)
-        .interactiveDismissDisabled(busy)
+        .background(PanelStyle.background, in: RoundedRectangle(cornerRadius: PanelStyle.radius))
+        .overlay(RoundedRectangle(cornerRadius: PanelStyle.radius).strokeBorder(.separator))
+        .shadow(color: .black.opacity(0.2), radius: 16, y: 6)
+        .onAppear { commentFocused = true }
     }
 }
