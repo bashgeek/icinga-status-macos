@@ -1,4 +1,5 @@
 import SwiftUI
+import IcingaCore
 
 @main
 struct IcingaStatusApp: App {
@@ -38,6 +39,14 @@ struct IcingaStatusApp: App {
         .defaultLaunchBehavior(ProcessInfo.processInfo.arguments.contains("--preview") ? .presented : .suppressed)
         .restorationBehavior(.disabled)
         #endif
+
+        WindowGroup("Acknowledge Problem", id: AcknowledgeWindow.id, for: ObjectID.self) { $objectID in
+            if let objectID { AcknowledgeWindow(objectID: objectID, store: store) }
+        }
+        .windowResizability(.contentSize)
+        .defaultPosition(.center)
+        .restorationBehavior(.disabled)
+        .commandsRemoved()
 
         Window("About Icinga Status", id: "about") {
             AboutView()

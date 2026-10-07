@@ -81,7 +81,8 @@ struct InstanceStatusRow: View {
 struct CheckRow: View {
     let object: MonitoredObject
     let store: AppStore
-    let acknowledge: () -> Void
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismiss) private var dismissPanel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hovered = false
     @State private var expanded = false
@@ -160,7 +161,12 @@ struct CheckRow: View {
                                     busy = false
                                 }
                             }
-                            Button("Acknowledge…", action: acknowledge).disabled(object.isAcknowledged || !object.isProblem)
+                            Button("Acknowledge…") {
+                                // The panel floats above normal windows. Close it so the form isn't hidden behind it.
+                                dismissPanel()
+                                NSApp.activate(ignoringOtherApps: true)
+                                openWindow(id: AcknowledgeWindow.id, value: object.id)
+                            }.disabled(object.isAcknowledged || !object.isProblem)
                             if busy { ProgressView().controlSize(.small) }
                         }
                         .disabled(busy).controlSize(.small)
@@ -205,11 +211,34 @@ struct CheckRow: View {
     }
 }
 
-// Shown inside the menu bar panel: a sheet is a separate window, and focusing it closes the panel.
-struct AcknowledgeView: View {
+// A standalone window: the menu bar panel closes when another window takes focus, so the form can't live in it.
+struct AcknowledgeWindow: View {
+    static let id = "acknowledge"
+    let objectID: ObjectID
+    let store: AppStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        if let object = store.object(objectID) {
+            AcknowledgeView(object: object, store: store)
+        } else {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Check unavailable").font(.headline)
+                Text("Icinga no longer reports this check.").foregroundStyle(.secondary)
+                HStack {
+                    Spacer()
+                    Button("Close") { dismiss() }.keyboardShortcut(.defaultAction)
+                }
+            }
+            .padding(24).frame(width: 390)
+        }
+    }
+}
+
+private struct AcknowledgeView: View {
     let object: MonitoredObject
     let store: AppStore
-    let dismiss: () -> Void
+    @Environment(\.dismiss) private var dismiss
     @State private var author = NSFullUserName()
     @State private var comment = ""
     @State private var error: String?
@@ -243,9 +272,6 @@ struct AcknowledgeView: View {
             }
         }
         .padding(24).frame(width: 390).textFieldStyle(.roundedBorder)
-        .background(PanelStyle.background, in: RoundedRectangle(cornerRadius: PanelStyle.radius))
-        .overlay(RoundedRectangle(cornerRadius: PanelStyle.radius).strokeBorder(.separator))
-        .shadow(color: .black.opacity(0.2), radius: 16, y: 6)
         .onAppear { commentFocused = true }
     }
 }

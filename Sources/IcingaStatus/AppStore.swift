@@ -244,6 +244,10 @@ final class AppStore {
         return !runtime.isStale(interval: instance.pollingInterval, now: now)
     }
 
+    func object(_ id: ObjectID) -> MonitoredObject? {
+        runtimes[id.instanceID]?.snapshot?.objects.first { $0.id == id }
+    }
+
     func instanceName(_ id: UUID) -> String { instances.first { $0.id == id }?.name ?? "Unknown instance" }
 
     func webURL(for id: UUID) -> URL? {

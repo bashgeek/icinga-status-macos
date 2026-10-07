@@ -19,7 +19,6 @@ struct StatusPanel: View {
     @State private var showInstances = false
     @State var scope: CheckListScope = .problems
     @State var showFilters = false
-    @State private var acknowledging: MonitoredObject?
     @FocusState private var searchFocused: Bool
 
     private var filtersActive: Bool { !search.isEmpty || selectedInstance != nil }
@@ -58,7 +57,6 @@ struct StatusPanel: View {
         }
         .frame(width: 460, height: scope == .problems && !showsCheckList && !showInstances && !store.instances.isEmpty ? 460 : 640)
         .background(PanelStyle.background)
-        .overlay { if let object = acknowledging { acknowledgeOverlay(object) } }
         .onChange(of: store.instances.map(\.id)) { _, ids in
             if let selectedInstance, !ids.contains(selectedInstance) { self.selectedInstance = nil }
         }
@@ -215,7 +213,7 @@ struct StatusPanel: View {
             } else {
                 LazyVStack(spacing: 0) {
                     ForEach(objects) { object in
-                        CheckRow(object: object, store: store) { acknowledging = object }
+                        CheckRow(object: object, store: store)
                         if object.id != objects.last?.id { Divider().padding(.leading, 42) }
                     }
                 }
@@ -253,16 +251,6 @@ struct StatusPanel: View {
         .padding(12)
         .background(PanelStyle.surface, in: RoundedRectangle(cornerRadius: 8))
         .transition(.opacity)
-    }
-
-    private func acknowledgeOverlay(_ object: MonitoredObject) -> some View {
-        ZStack {
-            // Swallow clicks so the panel behind the form stays inert.
-            Color.black.opacity(0.25).contentShape(Rectangle()).onTapGesture {}
-                .accessibilityHidden(true)
-            AcknowledgeView(object: object, store: store) { acknowledging = nil }.id(object.id)
-                .accessibilityAddTraits(.isModal)
-        }
     }
 
     private func clearFilters() { search = ""; selectedInstance = nil }

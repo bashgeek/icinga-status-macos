@@ -132,7 +132,8 @@ public struct IcingaClient: Sendable {
         var body: [String: Any] = [
             "type": object.kind.rawValue,
             "filter": object.kind == .host ? "host.name == target_name" : "service.__name == target_name",
-            "filter_params": ["target_name": object.name]
+            // Icinga reads filter variables from filter_vars and silently ignores unknown keys.
+            "filter_vars": ["target_name": object.name]
         ]
         switch action {
         case .recheck:
